@@ -1,7 +1,7 @@
 const http = require('http');
 var formidable = require('formidable');
 var fs = require('fs');
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 
 server = http.createServer(function (req, res) {
   if (req.url == '/fileupload') {
