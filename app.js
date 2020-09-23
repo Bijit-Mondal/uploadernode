@@ -1,25 +1,30 @@
-var http = require('http');
-var formidable = require('formidable');
-var fs = require('fs');
+const http = require('http');
+const formidable = require('formidable');
 
-http.createServer(function (req, res) {
-  if (req.url == '/fileupload') {
-    var form = new formidable.IncomingForm();
-    form.parse(req, function (err, fields, files) {
-      var oldpath = files.filetoupload.path;
-      var newpath = 'Uploads/' + files.filetoupload.name;
-      fs.rename(oldpath, newpath, function (err) {
-        if (err) throw err;
-        res.write('File uploaded and moved!');
-        res.end();
-      });
- });
-  } else {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
-    res.write('<input type="file" name="filetoupload"><br>');
-    res.write('<input type="submit">');
-    res.write('</form>');
-    return res.end();
+const server = http.createServer((req, res) => {
+  if (req.url === '/api/upload' && req.method.toLowerCase() === 'post') {
+    // parse a file upload
+    const form = formidable({ multiples: true });
+
+    form.parse(req, (err, fields, files) => {
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ fields, files }, null, 2));
+    });
+
+    return;
   }
-}).listen(8080);
+
+  // show a file upload form
+  res.writeHead(200, { 'content-type': 'text/html' });
+  res.end(`
+    <form action="/api/upload" enctype="multipart/form-data" method="post">
+      <div>Text field title: <input type="text" name="title" /></div>
+      <div>File: <input type="file" name="multipleFiles" multiple="multiple" /></div>
+      <input type="submit" value="Upload" />
+    </form>
+  `);
+});
+
+server.listen(8080, () => {
+  console.log('Server listening on http://localhost:8080/ ...');
+});
