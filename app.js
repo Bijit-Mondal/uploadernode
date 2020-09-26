@@ -1,30 +1,28 @@
-const http = require('http');
-const formidable = require('formidable');
-var fs = require('fs');
-const port = process.env.PORT || 3000
+var express = require('express');
+var formidable = require('formidable');
 
-server = http.createServer(function (req, res) {
-  if (req.url == '/fileupload') {
-    var form = new formidable.IncomingForm();
-    form.parse(req, function (err, fields, files) {
-      var oldpath = files.filetoupload.path;
-      var newpath = 'Uploads/' + files.filetoupload.name;
-      fs.rename(oldpath, newpath, function (err) {
-        if (err) throw err;
-        res.write('File uploaded and moved!. Find Your File At ');
-        console.log(newpath);
-        res.write(newpath);
-        res.end();
-      });
- });
-  } else {
-    fs.readFile('index.html',function(err,data){
-      res.writeHead(200,{'Content-Type':'text/html'});
-      res.write(data);
-      return res.end();
-    });
-  }
+var app = express();
+
+app.get('/', function (req, res){
+    res.sendFile(__dirname + '/ind.html');
 });
-server.listen(port,() =>{
-  console.log(`Server running at port `+port);
-})
+
+app.post('/', function (req, res){
+    var form = new formidable.IncomingForm();
+
+    form.parse(req);
+
+    form.on('fileBegin', function (name, file){
+        file.path = __dirname + '/uploads/' + file.name;
+    });
+
+    form.on('file', function (name, file){
+        console.log('Uploaded ' + file.name);
+    });
+
+    res.sendFile(__dirname + '/ind.html');
+    res.write('Uploaded');
+    res.end();
+});
+
+app.listen(3000);
