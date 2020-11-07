@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LearnOpedia Uploader</title>
+    <style>
+		.Progress_Status {
+			max-width: 50%;
+			min-width: 10%;
+			background-color: rgb(201, 224, 223);
+		}
+ 		.my{
+ 		   display: none;
+ 		}
+		#myprogressBar {
+			width: 0%;
+			height: 35px;
+			background-color: #156616d8;
+			text-align: center;
+			line-height: 32px;
+			color: black;
+		}
+	</style>
+</head>
+<body>
+	<center>
+	<form action="/" enctype="multipart/form-data" method="post">
+    <input type="file" name="upload" multiple>
+    <input type="submit"id="btn" value="Upload">
+    </center>
+    <div class="Progress_Status my">
+	<div id="myprogressBar"></div>	
+	</div>
+	<div id="Result"></div>
+</form>
+<script>
+	var click = document.getElementById("btn");
+	var everything = document.querySelector(".my");
+	var Upload = function(){
+		everything.classList.toggle('my');
+		var element = document.getElementById("myprogressBar");
+		var width = 1;
+		var result = document.getElementById("Result"); 
+		var scene = function() {
+			if (width >= 100) {
+				window.clearInterval(identity);
+				result.innerHTML="<p><strong>File Uploaded</strong></p>"
+			} else {
+				width++;
+				element.style.width = width + '%';
+			}
+		};
+	var identity = window.setInterval(scene,100);
+	};
+	click.addEventListener("click",Upload);
+</script>
+</body>
+</html>
